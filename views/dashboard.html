@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Dashboard</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+        .task-list {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        .task-item {
+            background: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Your Dashboard</h1>
+        
+        <section id="user-info">
+            <h2>User Information</h2>
+            <p>Username: <span id="username"></span></p>
+            <p>Email: <span id="email"></span></p>
+        </section>
+
+        <section id="task-management">
+            <h2>Task Management</h2>
+            <button id="add-task-btn">Add New Task</button>
+            
+            <div class="task-list">
+                <h3>Your Tasks</h3>
+                <!-- Tasks will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="notes">
+            <h2>Notes</h2>
+            <textarea id="note-input" rows="4" cols="50" placeholder="Add a note..."></textarea>
+            <button id="add-note-btn">Add Note</button>
+            <div id="notes-list">
+                <!-- Notes will be dynamically added here -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // JavaScript to handle dynamic content and interactions will go here
+        // For example:
+        document.getElementById('add-task-btn').addEventListener('click', function() {
+            // Code to open a modal or form for adding a new task
+        });
+
+        document.getElementById('add-note-btn').addEventListener('click', function() {
+            // Code to add a new note
+        });
+
+        // You'll need to add more JavaScript to handle:
+        // 1. Fetching and displaying user information
+        // 2. Fetching and displaying tasks
+        // 3. Adding new tasks
+        // 4. Updating task status
+        // 5. Adding and displaying notes
+    </script>
+</body>
+</html>
