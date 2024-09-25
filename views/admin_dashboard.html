@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Project Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header a {
+            color: #ffffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        header #branding {
+            float: left;
+        }
+        header #branding h1 {
+            margin: 0;
+        }
+        header nav {
+            float: right;
+            margin-top: 10px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form input, form textarea, form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn {
+            display: inline-block;
+            background: #e8491d;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1>Admin Dashboard</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#assign-task">Assign Task</a></li>
+                    <li><a href="#all-tasks">All Tasks</a></li>
+                    <li><a href="login.php">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="main">
+        <div class="container">
+            <div class="card" id="assign-task">
+                <h2>Assign New Task</h2>
+                <form id="assignTaskForm">
+                    <select name="user_id" required>
+                        <option value="">Select User</option>
+                        <option value="1">User 1</option>
+                        <option value="2">User 2</option>
+                        <option value="3">User 3</option>
+                    </select>
+                    <input type="text" name="title" placeholder="Task Title" required>
+                    <textarea name="description" placeholder="Task Description" required></textarea>
+                    <input type="date" name="due_date" required>
+                    <select name="status">
+                        <option value="Not Started">Not Started</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <button type="submit" class="btn">Assign Task</button>
+                </form>
+            </div>
+
+            <div class="card" id="all-tasks">
+                <h2>All Users' Tasks</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Task Title</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>User 1</td>
+                            <td>Complete Project Proposal</td>
+                            <td>Finalize the project proposal document</td>
+                            <td>2023-12-15</td>
+                            <td>In Progress</td>
+                            <td>
+                                <button class="btn" onclick="editTask(1)">Edit</button>
+                                <button class="btn" onclick="deleteTask(1)">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>User 2</td>
+                            <td>Design User Interface</td>
+                            <td>Create mockups for the new dashboard</td>
+                            <td>2023-12-20</td>
+                            <td>Not Started</td>
+                            <td>
+                                <button class="btn" onclick="editTask(2)">Edit</button>
+                                <button class="btn" onclick="deleteTask(2)">Delete</button>
+                            </td>
+                        </tr>
+                        <!-- More rows would be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('assignTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Here you would typically send the form data to your server
+            alert('Task assigned successfully!');
+        });
+
+        function editTask(taskId) {
+            // Here you would typically open a modal or redirect to an edit page
+            alert('Editing task ' + taskId);
+        }
+
+        function deleteTask(taskId) {
+            // Here you would typically send a delete request to your server
+            if(confirm('Are you sure you want to delete this task?')) {
+                alert('Task ' + taskId + ' deleted successfully');
+            }
+        }
+    </script>
+</body>
+</html>
