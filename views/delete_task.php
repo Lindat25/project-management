@@ -19,8 +19,9 @@ if (isset($_POST['task_id'])) {
     if ($stmt->execute()) {
         echo "success";
     } else {
-        echo "error";
+        echo "error: " . $stmt->error; // Log the specific database error
     }
 } else {
     echo "error";
 }
+?>
