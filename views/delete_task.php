@@ -2,17 +2,21 @@
 session_start();
 include("db.php");
 
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+// Check if the user is logged in and is an admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     echo "error";
     exit();
 }
 
-if(isset($_POST['task_id'])) {
+// Check if the task ID is provided
+if (isset($_POST['task_id'])) {
     $task_id = $_POST['task_id'];
+
+    // Prepare and execute the DELETE query
     $stmt = $con->prepare("DELETE FROM tasks WHERE id = ?");
     $stmt->bind_param("i", $task_id);
-    
-    if($stmt->execute()) {
+
+    if ($stmt->execute()) {
         echo "success";
     } else {
         echo "error";
@@ -20,4 +24,3 @@ if(isset($_POST['task_id'])) {
 } else {
     echo "error";
 }
-?>
