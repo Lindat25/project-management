@@ -33,14 +33,18 @@ label {
   color: #555;
 }
 
+
+
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"]
+ {
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
 
 button[type="submit"] {
   background-color: #007bff;
