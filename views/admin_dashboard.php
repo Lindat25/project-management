@@ -148,6 +148,30 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        #editTaskModal 
+        {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+         }
+
+         .status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 0.8em;
+}
+.status-not-started { background-color: #ffd700; }
+.status-in-progress { background-color: #1e90ff; color: white; }
+.status-completed { background-color: #32cd32; color: white; }
+
     </style>
 </head>
 <body>
@@ -222,6 +246,8 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
                             echo "<td>" . htmlspecialchars($task['due_date']) . "</td>";
                             echo "<td>" . htmlspecialchars($task['status']) . "</td>";
                             echo "<td>
+
+                                    <button class='btn' onclick='viewNotes(" . $task['id'] . ")'>View Notes</button>
                                     <button class='btn' onclick='editTask(" . $task['id'] . ")'>Edit</button>
                                     <button class='btn' onclick='deleteTask(" . $task['id'] . ")'>Delete</button>
                                     
@@ -236,48 +262,156 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
     </section>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function editTask(taskId) {
-            // Implement edit functionality (you might want to open a modal or redirect to an edit page)
-            alert('Editing task ' + taskId);
-        }
+<script>
 
-        function deleteTask(taskId) {
-            if(confirm('Are you sure you want to delete this task?')) {
-                $.ajax({
-                    url: 'delete_task.php',
-                    method: 'POST',
-                    data: { task_id: taskId },
-                    success: function(response) {
-                        if(response === 'success') {
-                            alert('Task deleted successfully');
-                            location.reload();
-                        } else {
-                            alert('Error deleting task');
-                        }
-                    }
-                });
+
+function viewNotes(taskId) {
+    $.ajax({
+        url: 'get_notes.php',
+        method: 'GET',
+        data: { task_id: taskId },
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                let notesHtml = '<h3>Notes for Task</h3>';
+                if (response.notes.length > 0) {
+                    notesHtml += '<ul>';
+                    response.notes.forEach(function(note) {
+                        notesHtml += `<li>${note.content} <small>(${note.created_at})</small></li>`;
+                    });
+                    notesHtml += '</ul>';
+                } else {
+                    notesHtml += '<p>No notes for this task yet.</p>';
+                }
+                $('#notesContent').html(notesHtml);
+                $('#notesModal').show();
+            } else {
+                alert('Error fetching notes: ' + response.message);
             }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+            alert('Error fetching notes. Please check the console for more details.');
         }
+    });
+}
 
-        $(document).ready(function() {
-            $('#assignTaskForm').submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: 'assign_task.php',
-                    method: 'POST',
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        if(response === 'success') {
-                            alert('Task assigned successfully');
-                            location.reload();
-                        } else {
-                            alert('Error assigning task');
-                        }
+
+
+
+    function editTask(taskId) {
+        $.ajax({
+            url: 'edit_task.php',
+            method: 'GET',
+            data: { task_id: taskId },
+            success: function(response) {
+                const task = JSON.parse(response);
+                // Populate a form with the task details
+                let form = `
+                    <form id="editTaskForm">
+                        <input type="hidden" name="task_id" value="${task.id}">
+                        <input type="text" name="title" value="${task.title}" required>
+                        <textarea name="description" required>${task.description}</textarea>
+                        <input type="date" name="due_date" value="${task.due_date}" required>
+                        <select name="status">
+                            <option value="Not Started" ${task.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+                            <option value="In Progress" ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Completed" ${task.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                        <select name="user_id" required>
+                            ${getUserOptions(task.user_id)}
+                        </select>
+                        <button type="submit">Update Task</button>
+                    </form>
+                `;
+                $('#editTaskModal').html(form).show();
+            }
+        });
+    }
+
+    function getUserOptions(selectedUserId) {
+        let options = '';
+        <?php
+        $users_result->data_seek(0);
+        while ($user = $users_result->fetch_assoc()) {
+            echo "options += '<option value=\"{$user['id']}\" ' + ({$user['id']} == selectedUserId ? 'selected' : '') + '>{$user['username']}</option>';\n";
+        }
+        ?>
+        return options;
+    }
+
+    function deleteTask(taskId) {
+    if(confirm('Are you sure you want to delete this task?')) {
+        $.ajax({
+            url: 'delete_task.php',
+            method: 'POST',
+            data: { task_id: taskId },
+            dataType: 'json',
+            success: function(response) {
+                if(response.status === 'success') {
+                    alert('Task deleted successfully');
+                    location.reload();
+                } else {
+                    alert('Error deleting task: ' + response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, errorThrown);
+                alert('Error deleting task. Please check the console for more details.');
+            }
+        });
+    }
+}
+    $(document).ready(function() {
+        $('#assignTaskForm').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: 'assign_task.php',
+                method: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status === 'success') {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert('Error assigning task: ' + response.message);
                     }
-                });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('AJAX error:', textStatus, errorThrown);
+                    alert('Error assigning task. Please check the console for more details.');
+                }
             });
         });
-    </script>
+
+        $(document).on('submit', '#editTaskForm', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: 'edit_task.php',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    const result = JSON.parse(response);
+                    if(result.status === 'success') {
+                        alert(result.message);
+                        location.reload();
+                    } else {
+                        alert('Error updating task: ' + result.message);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<div id="editTaskModal" style="display:none;"></div>
+
+<div id="notesModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+        <span onclick="document.getElementById('notesModal').style.display='none'" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <div id="notesContent"></div>
+    </div>
+</div>
 </body>
 </html>

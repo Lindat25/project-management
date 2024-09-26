@@ -277,8 +277,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
                 url: 'get_notes.php',
                 method: 'GET',
                 data: { task_id: taskId },
+                dataType: 'json',
                 success: function(response) {
-                    $('#notesContent').html(response);
+                    if (response.status === 'success') {
+                        let notesHtml = '<h3>Notes for Task</h3>';
+                        if (response.notes.length > 0) {
+                            notesHtml += '<ul>';
+                            response.notes.forEach(function(note) {
+                                notesHtml += `<li>${note.content} <small>(${note.created_at})</small></li>`;
+                            });
+                            notesHtml += '</ul>';
+                        } else {
+                            notesHtml += '<p>No notes for this task yet.</p>';
+                        }
+                        $('#notesContent').html(notesHtml);
+                        $('#task-notes').show();
+                    } else {
+                        alert('Error fetching notes: ' + response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('AJAX error:', textStatus, errorThrown);
+                    alert('Error fetching notes. Please check the console for more details.');
                 }
             });
         }
@@ -303,17 +323,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
         $(document).ready(function() {
             $('#addNoteForm').submit(function(e) {
                 e.preventDefault();
+                var taskId = $('#noteTaskId').val();
                 $.ajax({
                     url: 'add_note.php',
                     method: 'POST',
                     data: $(this).serialize(),
+                    dataType: 'json',
                     success: function(response) {
-                        if (response === 'success') {
-                            alert('Note added successfully');
-                            viewNotes($('#noteTaskId').val());
+                        if (response.status === 'success') {
+                            alert(response.message);
+                            viewNotes(taskId);
+                            $('#addNoteForm')[0].reset();
                         } else {
-                            alert('Failed to add note');
+                            alert('Error adding note: ' + response.message);
                         }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('AJAX error:', textStatus, errorThrown);
+                        alert('Error adding note. Please check the console for more details.');
                     }
                 });
             });
