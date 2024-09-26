@@ -234,7 +234,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
                             echo "<h3>" . htmlspecialchars($task['title']) . " (by " . htmlspecialchars($task['username']) . ")</h3>";
                             echo "<p>Description: " . htmlspecialchars($task['description']) . "</p>";
                             echo "<p>Due Date: " . htmlspecialchars($task['due_date']) . "</p>";
-                            echo "<p>Status: " . htmlspecialchars($task['status']) . "</p>";
+                            echo "<p>Status: <select class='status-dropdown' onchange='updateStatus(" . $task['id'] . ", this)'>";
+                                $statuses = ['Not Started', 'In Progress', 'Completed'];
+                                foreach ($statuses as $status) {
+                                    $selected = ($status == $task['status']) ? 'selected' : '';
+                                    echo "<option value='$status' $selected>$status</option>";
+                                }
+                                echo "</select></p>";
                             echo "</li>";
                         }
                     } else {
@@ -304,21 +310,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
         }
 
         function updateStatus(taskId, element) {
-            const newStatus = element.value;
-            
-            $.ajax({
-                url: 'update_status.php',
-                method: 'POST',
-                data: { task_id: taskId, status: newStatus },
-                success: function(response) {
-                    if (response === 'success') {
-                        alert('Status updated successfully');
-                    } else {
-                        alert('Failed to update status');
-                    }
-                }
-            });
+    const newStatus = element.value;
+    
+    $.ajax({
+        url: 'update_status.php',
+        method: 'POST',
+        data: { task_id: taskId, status: newStatus },
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                alert(response.message);
+                // Optionally, update the UI to reflect the change
+            } else {
+                alert('Failed to update status: ' + response.message);
+                // Reset the dropdown to its previous value
+                $(element).val($(element).data('previous-value'));
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+            alert('Error updating status. Please check the console for more details.');
+            // Reset the dropdown to its previous value
+            $(element).val($(element).data('previous-value'));
         }
+    });
+}
+
+    // Add this to preserve the previous value before change
+    $(document).on('focus', '.status-dropdown', function() {
+        $(this).data('previous-value', this.value);
+    });
 
         $(document).ready(function() {
             $('#addNoteForm').submit(function(e) {

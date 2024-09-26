@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(); 
 include("db.php");
 
 // Check if user is logged in and is an admin
@@ -50,6 +50,8 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
             background-color: #f4f4f4;
             color: #333;
         }
+
+        
         .container {
             width: 90%;
             max-width: 1200px;
@@ -174,21 +176,24 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
 
     </style>
 </head>
+
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1>Admin Dashboard</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#assign-task">Assign Task</a></li>
-                    <li><a href="#all-tasks">All Tasks</a></li>
-                    <li><a href="login.php">Logout</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    
+    <div class="container">
+        <header>
+                <div id="branding">
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#assign-task">Assign Task</a></li>
+                        <li><a href="#all-tasks">All Tasks</a></li>
+                        <li><a href="login.php">Logout</a></li>
+                    </ul>
+                </nav>
+        </header>
+    </div>
+    
 
     <section class="main">
         <div class="container">
@@ -244,7 +249,7 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
                             echo "<td>" . htmlspecialchars($task['title']) . "</td>";
                             echo "<td>" . htmlspecialchars($task['description']) . "</td>";
                             echo "<td>" . htmlspecialchars($task['due_date']) . "</td>";
-                            echo "<td>" . htmlspecialchars($task['status']) . "</td>";
+                            echo "<td><span class='status status-" . strtolower(str_replace(' ', '-', $task['status'])) . "'>" . htmlspecialchars($task['status']) . "</span></td>";
                             echo "<td>
 
                                     <button class='btn' onclick='viewNotes(" . $task['id'] . ")'>View Notes</button>
@@ -328,6 +333,45 @@ function viewNotes(taskId) {
             }
         });
     }
+
+
+    function updateStatus(taskId, element) {
+        const newStatus = element.value;
+        
+        $.ajax({
+            url: 'update_status.php',
+            method: 'POST',
+            data: { task_id: taskId, status: newStatus },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                    // Optionally, update the UI to reflect the change
+                } else {
+                    alert('Failed to update status: ' + response.message);
+                    // Reset the dropdown to its previous value
+                    $(element).val($(element).data('previous-value'));
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, errorThrown);
+                alert('Error updating status. Please check the console for more details.');
+                // Reset the dropdown to its previous value
+                $(element).val($(element).data('previous-value'));
+            }
+        });
+    }
+
+    // Add this to preserve the previous value before change
+    $(document).on('focus', '.status-dropdown', function() {
+        $(this).data('previous-value', this.value);
+    });
+
+
+
+
+
+
 
     function getUserOptions(selectedUserId) {
         let options = '';
