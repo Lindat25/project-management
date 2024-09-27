@@ -11,9 +11,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     if(!empty($gmail) && !empty($password) && !is_numeric($gmail))
     {
+        // Hash the password
+        $hashed_password = password_hash($_POST['pass'], PASSWORD_DEFAULT);
+
         // Use prepared statement
         $stmt = $con->prepare("INSERT INTO form (username, email, pass, role) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $username, $gmail, $password, $role);
+        $stmt->bind_param("ssss", $username, $gmail, $hashed_password, $role);
 
         if($stmt->execute())
         {
