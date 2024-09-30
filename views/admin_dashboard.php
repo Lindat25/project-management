@@ -64,7 +64,7 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
         color: #ffffff;
         padding-top: 30px;
         min-height: 120px;
-        border-bottom: #e8491d 3px solid;
+        border-bottom: #008a9a 3px solid;
     }
 
     header a {
@@ -137,7 +137,7 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
 
     .btn {
         display: inline-block;
-        background: #e8491d;
+        background: #3fa9f4;
         color: #fff;
         padding: 10px 20px;
         border: none;
@@ -345,7 +345,7 @@ $tasks_result = $con->query("SELECT t.*, f.username FROM tasks t JOIN form f ON 
             <ul>
                 <li><a href="#assign-task">Assign Task</a></li>
                 <li><a href="#all-tasks">All Tasks</a></li>
-                <li><a href="login.php">Logout</a></li>
+                <li><a href="../index.php">Logout</a></li>
             </ul>
         </nav>
     </header>

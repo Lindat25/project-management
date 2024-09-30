@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
             color: #ffffff;
             padding-top: 30px;
             min-height: 70px;
-            border-bottom: #e8491d 3px solid;
+            border-bottom: #008a9a 3px solid;
         }
         header a {
             color: #ffffff;
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
         }
         button {
             display: inline-block;
-            background: #e8491d;
+            background: #3fa9f4;
             color: #fff;
             padding: 10px 20px;
             border: none;
@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
                     <?php if ($is_admin): ?>
                         <li><a href="#all-tasks">All Users' Tasks</a></li>
                     <?php endif; ?>
-                    <li><a href="login.php">Logout</a></li>
+                    <li><a href="../index.php">Logout</a></li>
                 </ul>
             </nav>
         </header>
